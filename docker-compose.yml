@@ -1,17 +1,46 @@
 version: '3'
 
 services:
-  pgsql:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+    - postgres
+    environment:
+      # API Config variables
+      PORT: 3000
+      JWT_SECRET: super-secret
+      # Database Config variables
+      DATABASE_URL: posgres://pguser:pgpassword@postgres:5432/nestjs
+      DB_UNIQUE_ERROR: 23505
+      DB_TYPE: postgres
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USER: pguser
+      DB_PASSWORD: pgpassword
+      DB_DATABASE: nestjs
+      # Winston Config variables
+      LOGGER_LEVEL: verbose
+      LOGGER_DIR: logs
+      LOGGER_FILENAME: application.log
+
+      # Auth variables
+    ports:
+      - "3000:3000"
+
+  postgres:
     image: postgres:alpine
     ports:
       - '5432:5432'
-    container_name: 'pgsql'
+    container_name: 'postgres'
     restart: always
     volumes:
       - pg-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: pguser
       POSTGRES_PASSWORD: pgpassword
+      POSTGRES_DB: nestjs
 
   adminer:
     image: adminer
@@ -20,5 +49,4 @@ services:
       - 8080:8080
 
 volumes:
-  api-logs:
   pg-data:

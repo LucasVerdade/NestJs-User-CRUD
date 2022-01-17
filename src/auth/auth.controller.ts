@@ -3,16 +3,15 @@ import {
   Controller,
   Get,
   Post,
-  Req,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
-import { BasicUserDto } from 'src/user/dtos/basic-user.dto';
-import { CreateUserDto } from 'src/user/dtos/create-user.dto';
 import { ReturnUserDto } from 'src/user/dtos/return-user-dto';
-import { User } from 'src/user/user.entity';
+import { BasicUserDto } from '../user/dtos/basic-user.dto';
+import { CreateUserDto } from '../user/dtos/create-user.dto';
+import { User } from '../user/user.entity';
 import { AuthService } from './auth.service';
 import { CredentialsDto } from './dtos/credentials.dto';
 import { GetUser } from './get-user.decorator';
@@ -25,9 +24,10 @@ export class AuthController {
   @Post('/signup')
   async signUp(
     @Body(ValidationPipe) createUserDto: CreateUserDto,
-  ): Promise<{ message: string }> {
-    await this.authService.signUp(createUserDto);
+  ): Promise<ReturnUserDto> {
+    const user = await this.authService.signUp(createUserDto);
     return {
+      user: user,
       message: 'Cadastro realizado com sucesso',
     };
   }

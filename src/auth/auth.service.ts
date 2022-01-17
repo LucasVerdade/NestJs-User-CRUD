@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BasicUserDto } from 'src/user/dtos/basic-user.dto';
-import { CreateUserDto } from 'src/user/dtos/create-user.dto';
-import { UserRole } from 'src/user/user-roles.enum';
-import { User } from 'src/user/user.entity';
-import { UserRepository } from 'src/user/user.repository';
+import { BasicUserDto } from '../user/dtos/basic-user.dto';
+import { CreateUserDto } from '../user/dtos/create-user.dto';
+import { UserRole } from '../user/user-roles.enum';
+import { User } from '../user/user.entity';
+import { UserRepository } from '../user/user.repository';
 import { CredentialsDto } from './dtos/credentials.dto';
 
 @Injectable()

@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { hash } from 'bcrypt';
-import { Profile } from 'src/profile/profile.entity';
+import { Profile } from '../profile/profile.entity';
 
 @Entity()
 @Unique(['email'])

@@ -1,4 +1,4 @@
-import { Profile } from 'src/profile/profile.entity';
+import { Profile } from '../../profile/profile.entity';
 
 export class BasicUserDto {
   id: string;

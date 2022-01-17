@@ -13,9 +13,9 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
-import { GetUser } from 'src/auth/get-user.decorator';
-import { Role } from 'src/auth/roles.decorator';
-import { RolesGuard } from 'src/auth/roles.guard';
+import { GetUser } from '../auth/get-user.decorator';
+import { Role } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { FindUsersQueryDto } from './dtos/find-user-query.dto';
 import { ReturnUserDto } from './dtos/return-user-dto';
@@ -23,19 +23,20 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserRole } from './user-roles.enum';
 import { User } from './user.entity';
 import { UserService } from './user.service';
+import { I18n, I18nContext } from 'nestjs-i18n';
 
 @ApiTags('user')
 @Controller('user')
+@UseGuards(AuthGuard(), RolesGuard)
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Post('/admin')
-  @UseGuards(AuthGuard(), RolesGuard)
   @Role(UserRole.ADMIN)
   async createAdminUser(
     @Body(ValidationPipe) createUserDto: CreateUserDto,
   ): Promise<ReturnUserDto> {
-    const user = await this.userService.createAdminUser(
+    const user = await this.userService.createUser(
       createUserDto,
       UserRole.ADMIN,
     );
@@ -46,10 +47,11 @@ export class UserController {
   }
 
   @Post()
+  @Role(UserRole.ADMIN)
   async createUser(
     @Body(ValidationPipe) createUserDto: CreateUserDto,
   ): Promise<ReturnUserDto> {
-    const user = await this.userService.createAdminUser(
+    const user = await this.userService.createUser(
       createUserDto,
       UserRole.USER,
     );
@@ -60,7 +62,6 @@ export class UserController {
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard(), RolesGuard)
   @Role(UserRole.ADMIN)
   async findUserById(@Param('id') id: string): Promise<ReturnUserDto> {
     const user = await this.userService.findUserById(id);
@@ -101,9 +102,10 @@ export class UserController {
   @Get()
   @Role(UserRole.ADMIN)
   async findUser(@Query() query: FindUsersQueryDto) {
-    const found = await this.userService.findUsers(query);
+    const { users, total } = await this.userService.findUsers(query);
     return {
-      found,
+      users,
+      total,
       message: 'Usuários encontrados',
     };
   }

@@ -8,9 +8,9 @@ import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { CredentialsDto } from 'src/auth/dtos/credentials.dto';
+import { CredentialsDto } from '../auth/dtos/credentials.dto';
 import { FindUsersQueryDto } from './dtos/find-user-query.dto';
-import { ProfileRepository } from 'src/profile/profile.repository';
+import { ProfileRepository } from '../profile/profile.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @EntityRepository(User)
@@ -58,12 +58,6 @@ export class UserRepository extends Repository<User> {
     query.take(+queryDto.limit);
     query.orderBy(queryDto.sort ? JSON.parse(queryDto.sort) : undefined);
     query.select([
-//        id: id do usuário (pode ser o próprio gerado pelo banco, porém seria interessante se fosse um GUID);
-//        created: data da criação do usuário;
-//        modified: data da última atualização do usuário;
-//        last_login: data do último login (no caso da criação, será a mesma que a criação);
-//        profiles: lista de objetos perfil relacionados ao usuário;
-//        token: token de acesso da API (pode ser um GUID ou um JWT).
       'user.name',
       'user.email',
       'user.role',
@@ -71,8 +65,7 @@ export class UserRepository extends Repository<User> {
       'user.id',
       'user.created',
       'user.modified',
-      'user.token',
-      'user.last_login',
+      'user.lastTimeLogin',
     ]);
     query.leftJoinAndSelect('user.profiles', 'profile');
 
@@ -100,7 +93,7 @@ export class UserRepository extends Repository<User> {
       delete user.salt;
       return user;
     } catch (error) {
-      if (error.code.toString() === '23505') {
+      if (error.code.toString() === process.env.DB_UNIQUE_ERROR) {
         throw new ConflictException('Endereço de email já está em uso'); // TODO: multilangual messages
       } else {
         console.error(error);

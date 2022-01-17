@@ -18,7 +18,7 @@ export class UserService {
     private userRepository: UserRepository,
   ) {}
 
-  async createAdminUser(
+  async createUser(
     createUserDto: CreateUserDto,
     role: UserRole,
   ): Promise<User> {
@@ -49,10 +49,7 @@ export class UserService {
   }
 
   async updateUser(updateUserDto: UpdateUserDto, id: string): Promise<User> {
-    const result = await this.userRepository.update(
-      { id },
-      { ...updateUserDto },
-    );
+    const result = await this.userRepository.update({ id }, updateUserDto);
     if (result.affected > 0) {
       const user = await this.findUserById(id);
       return user;

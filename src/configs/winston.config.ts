@@ -6,7 +6,7 @@ import * as winston from 'winston';
 
 export const winstonConfig: WinstonModuleOptions = {
   levels: winston.config.npm.levels,
-  level: 'verbose',
+  level: process.env.LOGGER_LEVEL,
   transports: [
     new winston.transports.Console({
       format: winston.format.combine(
@@ -15,9 +15,9 @@ export const winstonConfig: WinstonModuleOptions = {
       ),
     }),
     new winston.transports.File({
-      level: 'verbose',
-      filename: 'application.log',
-      dirname: 'logs',
+      level: process.env.LOGGER_LEVEL,
+      filename: process.env.LOGGER_FILENAME,
+      dirname: process.env.LOGGER_DIR,
     }),
   ],
 };

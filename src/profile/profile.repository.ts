@@ -16,7 +16,7 @@ export class ProfileRepository extends Repository<Profile> {
       profile.save();
       return profile;
     } catch (error) {
-      if (error.code.toString() === '23505') {
+      if (error.code.toString() === process.env.DB_UNIQUE_ERROR) {
         throw new ConflictException('Já existe um perfil com essa descrição');
       } else {
         throw new InternalServerErrorException(

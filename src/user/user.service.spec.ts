@@ -1,11 +1,14 @@
-import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { FindUsersQueryDto } from './dtos/find-user-query.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserRole } from './user-roles.enum';
 import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
+import { Profile } from '../profile/profile.entity';
 
 const mockUserRepository = () => ({
   createUser: jest.fn(),
@@ -50,12 +53,16 @@ describe('UserService', () => {
         name: 'Mock User',
         password: 'mockPassword',
         passwordConfirmation: 'mockPassword',
+        profiles: undefined,
       };
     });
 
     it('should create an user if passwords match', async () => {
       userRepository.createUser.mockResolvedValue('mockUser');
-      const result = await service.createAdminUser(mockCreateUserDto);
+      const result = await service.createUser(
+        mockCreateUserDto,
+        UserRole.ADMIN,
+      );
 
       expect(userRepository.createUser).toHaveBeenCalledWith(
         mockCreateUserDto,
@@ -66,7 +73,7 @@ describe('UserService', () => {
 
     it('should throw an error if passwords doesnt match', async () => {
       mockCreateUserDto.passwordConfirmation = 'wrongPassword';
-      expect(service.createAdminUser(mockCreateUserDto)).rejects.toThrow(
+      expect(service.createUser(mockCreateUserDto)).rejects.toThrow(
         UnprocessableEntityException,
       );
     });
@@ -78,8 +85,18 @@ describe('UserService', () => {
       expect(userRepository.findOne).not.toHaveBeenCalled();
 
       const result = await service.findUserById('mockId');
-      const select = ['email', 'name', 'role', 'id'];
-      expect(userRepository.findOne).toHaveBeenCalledWith('mockId', { select });
+      expect(userRepository.findOne).toHaveBeenCalledWith('mockId', {
+        select: [
+          'email',
+          'name',
+          'role',
+          'id',
+          'created',
+          'modified',
+          'lastTimeLogin',
+        ],
+        relations: ['profiles'],
+      });
       expect(result).toEqual('mockUser');
     });
 
@@ -141,7 +158,9 @@ describe('UserService', () => {
     it('should throw and error if no user were affetcted', async () => {
       userRepository.update.mockResolvedValue({ affected: 0 });
 
-      expect(service.updateUser('mockUpdateUserDto', 'mockId')).rejects.toThrow(NotFoundException);
+      expect(service.updateUser('mockUpdateUserDto', 'mockId')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

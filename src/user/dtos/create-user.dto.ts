@@ -1,5 +1,11 @@
-import { IsEmail, IsNotEmpty, IsOptional, MaxLength, MinLength } from 'class-validator';
-import { Profile } from 'src/profile/profile.entity';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { Profile } from '../../profile/profile.entity';
 // TODO: multilangual messages
 export class CreateUserDto {
   @IsNotEmpty({ message: 'Informe um endereço de email' })

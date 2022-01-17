@@ -11,6 +11,9 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
+import { Role } from 'src/auth/roles.decorator';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { UserRole } from 'src/user/user-roles.enum';
 import { CreateProfileDto } from './dtos/create-profile.dto';
 import { ReturnProfileDto } from './dtos/return-profile.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
@@ -19,11 +22,12 @@ import { ProfileService } from './profile.service';
 
 @ApiTags('profile')
 @Controller('profile')
-@UseGuards(AuthGuard())
+@UseGuards(AuthGuard(), RolesGuard)
 export class ProfileController {
   constructor(private profileService: ProfileService) {}
 
   @Post()
+  @Role(UserRole.ADMIN)
   async createProfile(
     @Body(ValidationPipe) createProfileDto: CreateProfileDto,
   ): Promise<ReturnProfileDto> {
@@ -35,11 +39,13 @@ export class ProfileController {
   }
 
   @Get()
+  @Role(UserRole.ADMIN)
   async getAll() {
     return await this.profileService.getAll();
   }
 
   @Get(':id')
+  @Role(UserRole.ADMIN)
   async findProfileById(@Param('id') id: string): Promise<ReturnProfileDto> {
     const profile = await this.profileService.findProfileById(id);
     return {
@@ -49,6 +55,7 @@ export class ProfileController {
   }
 
   @Patch(':id')
+  @Role(UserRole.ADMIN)
   async updateProfile(
     @Body(ValidationPipe) updateProfileDto: UpdateProfileDto,
     @Param('id') id: string,
@@ -57,6 +64,7 @@ export class ProfileController {
   }
 
   @Delete(':id')
+  @Role(UserRole.ADMIN)
   async deleteProfile(@Param('id') id: string) {
     await this.profileService.deleteProfile(id);
     return {
