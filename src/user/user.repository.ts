@@ -26,7 +26,6 @@ export class UserRepository extends Repository<User> {
     queryDto: FindUsersQueryDto,
   ): Promise<{ users: User[]; total: number }> {
     //#region Query Validation
-    // TODO: improve validations
     queryDto.status = queryDto.status === undefined ? true : queryDto.status;
 
     queryDto.page =

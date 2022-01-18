@@ -1,4 +1,5 @@
 import { UserRole } from '../user-roles.enum';
+import { Profile } from 'src/profile/profile.entity';
 import { IsString, IsEmail, IsOptional } from 'class-validator';
 
 export class UpdateUserDto {
@@ -17,4 +18,7 @@ export class UpdateUserDto {
 
   @IsOptional()
   role: UserRole;
+
+  @IsOptional()
+  profiles: Profile[];
 }

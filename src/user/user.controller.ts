@@ -23,7 +23,6 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserRole } from './user-roles.enum';
 import { User } from './user.entity';
 import { UserService } from './user.service';
-import { I18n, I18nContext } from 'nestjs-i18n';
 
 @ApiTags('user')
 @Controller('user')
